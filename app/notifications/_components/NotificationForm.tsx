@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 type Props = {
   notifyInvite: boolean;
@@ -11,14 +12,12 @@ export function NotificationForm({ notifyInvite, notifySystem }: Props) {
   const [invite, setInvite] = useState(notifyInvite);
   const [system, setSystem] = useState(notifySystem);
   const [saving, setSaving] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   async function update(field: "notifyInvite" | "notifySystem", value: boolean) {
     if (field === "notifyInvite") setInvite(value);
     else setSystem(value);
 
     setSaving(field);
-    setError(null);
 
     const res = await fetch("/api/user/notifications", {
       method: "PATCH",
@@ -30,7 +29,9 @@ export function NotificationForm({ notifyInvite, notifySystem }: Props) {
     if (!res.ok) {
       if (field === "notifyInvite") setInvite(!value);
       else setSystem(!value);
-      setError("更新に失敗しました");
+      toast.error("更新に失敗しました");
+    } else {
+      toast.success("通知設定を更新しました");
     }
   }
 
@@ -51,7 +52,6 @@ export function NotificationForm({ notifyInvite, notifySystem }: Props) {
         disabled={saving === "notifySystem"}
         onChange={(v) => update("notifySystem", v)}
       />
-      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   );
 }

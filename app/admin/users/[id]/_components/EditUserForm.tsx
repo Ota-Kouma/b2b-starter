@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -50,8 +51,6 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
   const [isActive, setIsActive] = useState(user.isActive);
   const [loading, setLoading] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const selectableRoles = (
     ["COMPANY_ADMIN", "COMPANY_MANAGER", "COMPANY_AUDITOR", "EMPLOYEE"] as Role[]
@@ -60,8 +59,6 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(false);
 
     const body: Record<string, string> = {};
     if (name !== (user.name ?? "")) body.name = name;
@@ -92,17 +89,16 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
         INSUFFICIENT_PERMISSION: "権限が足りません",
         UPDATE_FAILED: "更新に失敗しました",
       };
-      setError(messages[data.error] ?? "エラーが発生しました");
+      toast.error(messages[data.error] ?? "エラーが発生しました");
       return;
     }
 
-    setSuccess(true);
+    toast.success("更新しました");
     router.refresh();
   }
 
   async function handleToggleActive() {
     setStatusLoading(true);
-    setError(null);
 
     const newStatus = !isActive;
     const res = await fetch(`/api/admin/users/${user.id}/status`, {
@@ -119,10 +115,11 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
         CANNOT_DEACTIVATE_SELF: "自分自身を無効化できません",
         UPDATE_FAILED: "更新に失敗しました",
       };
-      setError(messages[data.error] ?? "エラーが発生しました");
+      toast.error(messages[data.error] ?? "エラーが発生しました");
       return;
     }
 
+    toast.success(newStatus ? "ユーザーを有効化しました" : "ユーザーを無効化しました");
     setIsActive(newStatus);
     router.refresh();
   }
@@ -181,9 +178,6 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
             </Select>
           )}
         </div>
-
-        {error && <p className="text-sm text-red-500">{error}</p>}
-        {success && <p className="text-sm text-green-600">更新しました</p>}
 
         <Button type="submit" disabled={loading} className="w-full">
           {loading ? "更新中..." : "保存する"}

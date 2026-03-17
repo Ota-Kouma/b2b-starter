@@ -17,8 +17,8 @@ export default async function DashboardPage() {
   if (!session) redirect("/login");
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-2xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         <h1 className="text-2xl font-bold">ダッシュボード</h1>
         <Card>
           <CardHeader>

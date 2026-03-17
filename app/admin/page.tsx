@@ -45,8 +45,8 @@ export default async function AdminPage({
   const canChangeRole = hasPermission(session.role, "COMPANY_ADMIN") && !!session.companyId;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">管理画面</h1>
           {hasPermission(session.role, "COMPANY_AUDITOR") && (

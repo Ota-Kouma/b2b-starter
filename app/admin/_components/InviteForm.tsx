@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -19,8 +20,7 @@ export function InviteForm({ role }: Props) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [selectedRole, setSelectedRole] = useState<string>("EMPLOYEE");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading">("idle");
 
   // MANAGERはADMINを招待できない
   const availableRoles = role === "COMPANY_MANAGER"
@@ -30,7 +30,6 @@ export function InviteForm({ role }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
-    setErrorMsg("");
 
     const res = await fetch("/api/admin/users/invite", {
       method: "POST",
@@ -38,25 +37,25 @@ export function InviteForm({ role }: Props) {
       body: JSON.stringify({ email, name: name || undefined, role: selectedRole }),
     });
 
+    const data = await res.json();
+    setStatus("idle");
+
     if (res.ok) {
-      const data = await res.json();
-      setStatus("success");
       setEmail("");
       setName("");
       setSelectedRole("EMPLOYEE");
-      // Resend未設定の場合は招待リンクを表示
       if (data.inviteLink) {
-        setErrorMsg(`招待リンク（メール未送信）: ${data.inviteLink}`);
+        toast.info(`招待リンク（メール未送信）: ${data.inviteLink}`, { duration: 10000 });
+      } else {
+        toast.success("招待メールを送信しました");
       }
     } else {
-      const data = await res.json();
-      setStatus("error");
       const messages: Record<string, string> = {
         USER_BELONGS_TO_OTHER_COMPANY: "このユーザーはすでに別の会社に所属しています。",
         TOO_MANY_REQUESTS: "招待の送信回数が上限に達しました。しばらく待ってから再試行してください。",
         INSUFFICIENT_PERMISSION: "このロールを招待する権限がありません。",
       };
-      setErrorMsg(messages[data.error] ?? "招待の送信に失敗しました。");
+      toast.error(messages[data.error] ?? "招待の送信に失敗しました。");
     }
   }
 
@@ -97,14 +96,6 @@ export function InviteForm({ role }: Props) {
           ))}
         </select>
       </div>
-      {status === "success" && (
-        <p className="text-sm text-green-600 bg-green-50 p-3 rounded-md">
-          招待メールを送信しました。
-        </p>
-      )}
-      {status === "error" && (
-        <p className="text-sm text-red-600 bg-red-50 p-3 rounded-md">{errorMsg}</p>
-      )}
       <Button type="submit" disabled={status === "loading"}>
         {status === "loading" ? "送信中..." : "招待メールを送る"}
       </Button>

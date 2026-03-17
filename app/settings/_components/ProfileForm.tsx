@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -16,15 +17,11 @@ export function ProfileForm({ name, email, roleLabel }: Props) {
   const router = useRouter();
   const [nameValue, setNameValue] = useState(name ?? "");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (nameValue === (name ?? "")) return;
     setLoading(true);
-    setError(null);
-    setSuccess(false);
 
     const res = await fetch("/api/user/me", {
       method: "PATCH",
@@ -34,10 +31,10 @@ export function ProfileForm({ name, email, roleLabel }: Props) {
 
     setLoading(false);
     if (!res.ok) {
-      setError("更新に失敗しました");
+      toast.error("更新に失敗しました");
       return;
     }
-    setSuccess(true);
+    toast.success("プロフィールを更新しました");
     router.refresh();
   }
 
@@ -63,9 +60,6 @@ export function ProfileForm({ name, email, roleLabel }: Props) {
         <Label>ロール</Label>
         <Input value={roleLabel} disabled className="bg-gray-50 text-gray-500" />
       </div>
-
-      {error && <p className="text-sm text-red-500">{error}</p>}
-      {success && <p className="text-sm text-green-600">更新しました</p>}
 
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "保存中..." : "保存する"}

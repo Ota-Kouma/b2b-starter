@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,13 +13,11 @@ export function CreateCompanyForm() {
   const [adminEmail, setAdminEmail] = useState("");
   const [adminName, setAdminName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<Result>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setError(null);
     setResult(null);
 
     const res = await fetch("/api/platform/companies", {
@@ -36,7 +35,7 @@ export function CreateCompanyForm() {
         INVALID_INPUT: "入力内容が正しくありません",
         CREATE_FAILED: "作成に失敗しました",
       };
-      setError(messages[data.error] ?? "エラーが発生しました");
+      toast.error(messages[data.error] ?? "エラーが発生しました");
       return;
     }
 
@@ -78,7 +77,6 @@ export function CreateCompanyForm() {
             required
           />
         </div>
-        {error && <p className="text-sm text-red-500">{error}</p>}
         <Button type="submit" disabled={loading} className="w-full sm:w-auto">
           {loading ? "作成中..." : "会社を作成して招待リンクを発行"}
         </Button>
