@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/fetch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ export function ProfileForm({ name, email, roleLabel }: Props) {
     if (nameValue === (name ?? "")) return;
     setLoading(true);
 
-    const res = await fetch("/api/user/me", {
+    const res = await apiFetch("/api/user/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: nameValue }),

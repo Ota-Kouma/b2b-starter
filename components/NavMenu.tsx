@@ -18,7 +18,7 @@ export function NavMenu() {
 
   async function handleLogout() {
     await signOut(auth);
-    await fetch("/api/auth/session", { method: "DELETE" });
+    await apiFetch("/api/auth/session", { method: "DELETE" });
     router.push("/login");
   }
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/fetch";
 
 type Props = {
   notifyInvite: boolean;
@@ -19,7 +20,7 @@ export function NotificationForm({ notifyInvite, notifySystem }: Props) {
 
     setSaving(field);
 
-    const res = await fetch("/api/user/notifications", {
+    const res = await apiFetch("/api/user/notifications", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ [field]: value }),

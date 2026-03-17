@@ -42,14 +42,18 @@ export async function PATCH(
   }
 
   try {
-    // FirebaseのアカウントをDB更新と同期
-    const firebaseUser = await adminAuth.getUserByEmail(target.email);
-    await adminAuth.updateUser(firebaseUser.uid, { disabled: !parsed.data.isActive });
-
+    // DB更新を先に行い、成功後にFirebaseを同期（競合状態防止）
     const updated = await db.user.update({
       where: { id },
       data: { isActive: parsed.data.isActive },
     });
+
+    try {
+      const firebaseUser = await adminAuth.getUserByEmail(target.email);
+      await adminAuth.updateUser(firebaseUser.uid, { disabled: !parsed.data.isActive });
+    } catch (firebaseErr) {
+      console.error("Firebase sync error (DB already updated):", firebaseErr);
+    }
 
     await logAudit(session.dbId, parsed.data.isActive ? "USER_ACTIVATED" : "USER_DEACTIVATED", id);
 

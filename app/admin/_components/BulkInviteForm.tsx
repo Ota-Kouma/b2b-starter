@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Upload, FileText, X, CheckCircle, XCircle } from "lucide-react";
+import { apiFetch } from "@/lib/fetch";
 import { Button } from "@/components/ui/button";
 
 type Row = { email: string; name: string; role: string };
@@ -93,7 +94,7 @@ export function BulkInviteForm() {
     for (let i = 0; i < preview.length; i++) {
       const row = preview[i];
       try {
-        const res = await fetch("/api/admin/users/invite", {
+        const res = await apiFetch("/api/admin/users/invite", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: row.email, name: row.name || undefined, role: row.role }),

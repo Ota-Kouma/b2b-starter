@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/fetch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -70,7 +71,7 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
       return;
     }
 
-    const res = await fetch(`/api/admin/users/${user.id}`, {
+    const res = await apiFetch(`/api/admin/users/${user.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -101,7 +102,7 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
     setStatusLoading(true);
 
     const newStatus = !isActive;
-    const res = await fetch(`/api/admin/users/${user.id}/status`, {
+    const res = await apiFetch(`/api/admin/users/${user.id}/status`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ isActive: newStatus }),

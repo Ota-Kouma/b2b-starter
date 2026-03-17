@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/fetch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +21,7 @@ export function CreateCompanyForm() {
     setLoading(true);
     setResult(null);
 
-    const res = await fetch("/api/platform/companies", {
+    const res = await apiFetch("/api/platform/companies", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ companyName, adminEmail, adminName: adminName || undefined }),

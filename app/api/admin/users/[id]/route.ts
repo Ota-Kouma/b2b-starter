@@ -60,12 +60,7 @@ export async function PATCH(
   }
 
   try {
-    // メール変更の場合はFirebaseも更新
-    if (parsed.data.email && parsed.data.email !== target.email) {
-      const firebaseUser = await adminAuth.getUserByEmail(target.email);
-      await adminAuth.updateUser(firebaseUser.uid, { email: parsed.data.email });
-    }
-
+    // DB更新を先に行い、成功後にFirebaseを同期（競合状態防止）
     const updated = await db.user.update({
       where: { id },
       data: {
@@ -74,6 +69,16 @@ export async function PATCH(
         ...(parsed.data.role !== undefined && { role: parsed.data.role }),
       },
     });
+
+    // メール変更の場合はFirebaseも更新
+    if (parsed.data.email && parsed.data.email !== target.email) {
+      try {
+        const firebaseUser = await adminAuth.getUserByEmail(target.email);
+        await adminAuth.updateUser(firebaseUser.uid, { email: parsed.data.email });
+      } catch (firebaseErr) {
+        console.error("Firebase email sync error (DB already updated):", firebaseErr);
+      }
+    }
 
     const changes = [];
     if (parsed.data.name !== undefined) changes.push(`name:${parsed.data.name}`);

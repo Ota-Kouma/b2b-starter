@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { apiFetch } from "@/lib/fetch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -34,7 +35,7 @@ export function InviteForm({ role }: Props) {
     let res: Response;
     let data: Record<string, string> = {};
     try {
-      res = await fetch("/api/admin/users/invite", {
+      res = await apiFetch("/api/admin/users/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name: name || undefined, role: selectedRole }),
