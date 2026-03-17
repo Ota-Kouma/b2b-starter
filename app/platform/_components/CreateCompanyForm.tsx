@@ -26,7 +26,7 @@ export function CreateCompanyForm() {
       body: JSON.stringify({ companyName, adminEmail, adminName: adminName || undefined }),
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     setLoading(false);
 
     if (!res.ok) {

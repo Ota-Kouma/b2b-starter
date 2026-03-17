@@ -98,7 +98,7 @@ export function BulkInviteForm() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: row.email, name: row.name || undefined, role: row.role }),
         });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         if (res.ok) {
           resultRows.push({ ...row, status: "ok" });
         } else {

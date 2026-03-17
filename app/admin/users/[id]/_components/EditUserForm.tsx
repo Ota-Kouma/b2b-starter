@@ -76,7 +76,7 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
       body: JSON.stringify(body),
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     setLoading(false);
 
     if (!res.ok) {
@@ -107,7 +107,7 @@ export function EditUserForm({ user, sessionRole, isSelf }: Props) {
       body: JSON.stringify({ isActive: newStatus }),
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     setStatusLoading(false);
 
     if (!res.ok) {

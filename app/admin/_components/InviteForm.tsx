@@ -31,13 +31,20 @@ export function InviteForm({ role }: Props) {
     e.preventDefault();
     setStatus("loading");
 
-    const res = await fetch("/api/admin/users/invite", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, name: name || undefined, role: selectedRole }),
-    });
-
-    const data = await res.json();
+    let res: Response;
+    let data: Record<string, string> = {};
+    try {
+      res = await fetch("/api/admin/users/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, name: name || undefined, role: selectedRole }),
+      });
+      data = await res.json().catch(() => ({}));
+    } catch {
+      setStatus("idle");
+      toast.error("ネットワークエラーが発生しました。");
+      return;
+    }
     setStatus("idle");
 
     if (res.ok) {
