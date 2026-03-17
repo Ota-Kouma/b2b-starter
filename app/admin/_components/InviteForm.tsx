@@ -6,7 +6,7 @@ import { apiFetch } from "@/lib/fetch";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import type { Role } from "@prisma/client";
+import type { Role } from "@/lib/generated/prisma/enums";
 
 type Props = { role: Role };
 

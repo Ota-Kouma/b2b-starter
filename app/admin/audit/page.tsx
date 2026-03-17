@@ -29,7 +29,7 @@ export default async function AuditPage({
 }) {
   const session = await getSession();
   if (!session || !hasPermission(session.role, "COMPANY_AUDITOR")) redirect("/login");
-  if (!session.companyId) redirect("/dashboard");
+  if (!session.companyId) redirect("/platform");
 
   const { page: pageStr } = await searchParams;
   const page = Math.max(1, parseInt(pageStr ?? "1"));
