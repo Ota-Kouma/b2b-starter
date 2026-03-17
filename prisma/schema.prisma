@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(EMPLOYEE)
+  isActive  Boolean  @default(true)
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  notifyInvite  Boolean  @default(true)
+  notifySystem  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  auditLogs AuditLog[]
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  targetId  String?
+  detail    String?
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  PLATFORM_OWNER
+  PLATFORM_OPERATOR
+  COMPANY_ADMIN
+  COMPANY_MANAGER
+  COMPANY_AUDITOR
+  EMPLOYEE
+}
