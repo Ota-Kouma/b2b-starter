@@ -41,7 +41,8 @@ export function RoleSelect({ userId, currentRole, sessionRole }: Props) {
     ["COMPANY_ADMIN", "COMPANY_MANAGER", "COMPANY_AUDITOR", "EMPLOYEE"] as Role[]
   ).filter((r) => ROLE_LEVEL[r] < ROLE_LEVEL[sessionRole]);
 
-  async function handleChange(value: string) {
+  async function handleChange(value: string | null) {
+    if (!value) return;
     setLoading(true);
     await fetch(`/api/admin/users/${userId}/role`, {
       method: "PATCH",
